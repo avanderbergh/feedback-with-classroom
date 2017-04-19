@@ -5,10 +5,17 @@ import { HttpModule } from '@angular/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { LoginComponent } from './login/login.component';
+
+import { GoogleApiService } from './google-api.service';
+import { AuthGuard } from './auth-guard.service';
+import { FilesComponent } from './files/files.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    LoginComponent,
+    FilesComponent
   ],
   imports: [
     BrowserModule,
@@ -16,7 +23,7 @@ import { AppComponent } from './app.component';
     HttpModule,
     AppRoutingModule
   ],
-  providers: [],
+  providers: [GoogleApiService, AuthGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
