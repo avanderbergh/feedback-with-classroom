@@ -84,4 +84,28 @@ export class GoogleApiService {
     });
     return files;
   }
+  public listCourses() {
+    let courses = [];
+    const p = new Promise<any> ((resolve, reject) => {
+      gapi.load('auth2:client', () => {
+        gapi.client.request({
+          path: 'https://classroom.googleapis.com/v1/courses',
+          params: {
+            teacherId: 'me'
+          }
+        }).then(response => {
+          resolve(response.result.courses);
+        }, reason => {
+          console.log(reason.result);
+          reject(reason.result);
+        });
+      });
+    });
+    p.then(result => {
+      for (let course of result) {
+        courses.push(course);
+      }
+    });
+    return courses;
+  }
 }

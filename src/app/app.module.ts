@@ -11,6 +11,7 @@ import { LoginComponent } from './login/login.component';
 import { GoogleApiService } from './google-api.service';
 import { AuthGuard } from './auth-guard.service';
 import { FilesComponent } from './files/files.component';
+import { CourseListComponent } from './course-list/course-list.component';
 
 export const firebaseConfig = {
   apiKey: 'AIzaSyC3FfmyAI4BkxSj6Ow7KkJZ_OxwhAuAo40',
@@ -29,7 +30,8 @@ export const firebaseAuthConfig = {
   declarations: [
     AppComponent,
     LoginComponent,
-    FilesComponent
+    FilesComponent,
+    CourseListComponent
   ],
   imports: [
     BrowserModule,
