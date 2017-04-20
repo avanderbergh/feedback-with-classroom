@@ -8,11 +8,11 @@ import { Router } from '@angular/router';
   styleUrls: ['./files.component.css']
 })
 export class FilesComponent implements AfterViewInit {
-
+  files;
   constructor(private googleApi: GoogleApiService) { }
 
   ngAfterViewInit() {
-    this.googleApi.getFiles();
+    this.files = this.googleApi.getFiles();
   }
 
 }

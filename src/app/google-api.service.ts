@@ -2,48 +2,60 @@
 /// <reference types="gapi.auth2" />
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-
-declare var gapi: any;
+import { AngularFire } from 'angularfire2';
 
 @Injectable()
 export class GoogleApiService {
 
-  public client_id = '223687072677-79vuse35to6nms5d2ahp5l4q0bjnerk2.apps.googleusercontent.com';
+  public client_id = '279180053002-8f0275sgal1ebfh27v6sp01nql52lf86.apps.googleusercontent.com';
+  public api_key = 'AIzaSyC3FfmyAI4BkxSj6Ow7KkJZ_OxwhAuAo40';
   public scope = [
     'profile',
     'email',
-    'https://www.googleapis.com/auth/drive'
+    'https://www.googleapis.com/auth/drive',
+    'https://www.googleapis.com/auth/classroom.courses.readonly',
+    'https://www.googleapis.com/auth/classroom.coursework.students.readonly',
+    'https://www.googleapis.com/auth/classroom.profile.emails',
+    'https://www.googleapis.com/auth/classroom.profile.photos',
+    'https://www.googleapis.com/auth/classroom.rosters.readonly',
+    'https://www.googleapis.com/auth/classroom.student-submissions.students.readonly'
   ].join(' ');
-  constructor(private router: Router) { }
+  constructor(private af: AngularFire, private router: Router) { }
   public signIn() {
     gapi.load('auth2', () => {
-      gapi.auth2.init({
-        client_id: this.client_id,
-        scope: this.scope
-      }).then(() => {
-        gapi.signin2.render('my-signin2', {
-          'scope': this.scope,
-          'width': 240,
-          'height': 50,
-          'longtitle': true,
-          'theme': 'light',
-          'onsuccess': param => this.router.navigate(['h'])
+        gapi.auth2.init({
+          client_id: this.client_id,
+          scope: this.scope
+        }).then(() => {
+          gapi.signin2.render('my-signin2', {
+            'scope': this.scope,
+            'width': 240,
+            'height': 50,
+            'longtitle': true,
+            'theme': 'light',
+            'onsuccess': param => this.onSignIn(param)
+          });
         });
       });
-    });
+  }
+  public onSignIn(googleUser) {
+      setTimeout(this.router.navigate(['h']), 1000);
   }
   public isSignedIn(): Promise<boolean> {
-    return new Promise( resolve => {
+    return new Promise(resolve => {
       gapi.load('auth2', () => {
         gapi.auth2.init({
           client_id: this.client_id,
           scope: this.scope
         }).then(() => {
+          // Check if the user is signed in with the gapi.
           if (gapi.auth2.getAuthInstance().isSignedIn.get()) {
-            console.log('signed in!!');
+            // If the user is signed in with gapi, also sign them in with firebase auth.
+            this.af.auth.subscribe(authObject => {
+              if (!authObject) {this.af.auth.login(); }
+            });
             resolve(true);
           } else {
-            console.log('not signed in!!');
             this.router.navigate(['/login']);
             resolve(false);
           }
@@ -52,18 +64,24 @@ export class GoogleApiService {
     });
   }
   public getFiles() {
-    gapi.load('auth2:client', () => {
-      if (!gapi.auth2.getAuthInstance()) {
-        this.router.navigate(['login']);
-      } else {
+    let files = [];
+    const p = new Promise<any> ((resolve, reject) => {
+      gapi.load('auth2:client', () => {
         gapi.client.request({
-        'path': 'https://www.googleapis.com/drive/v3/files',
-      }).then(function(response) {
-        return response.result;
-      }, function(reason){
-        return reason.result;
+          path: 'https://www.googleapis.com/drive/v3/files',
+        }).then(response => {
+          resolve(response.result.files);
+        }, reason => {
+          console.log(reason.result);
+          reject(reason.result);
+        });
       });
-      }
     });
+    p.then(result => {
+       for (let file of result) {
+         files.push(file);
+       }
+    });
+    return files;
   }
 }

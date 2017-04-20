@@ -5,7 +5,7 @@ import { FilesComponent } from './files/files.component';
 import { AuthGuard } from './auth-guard.service';
 
 const routes: Routes = [
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '', redirectTo: '/h', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
   { path: 'h', component: FilesComponent , canActivate: [AuthGuard]}
 ];
