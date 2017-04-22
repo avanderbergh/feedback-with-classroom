@@ -63,70 +63,37 @@ export class GoogleApiService {
       });
     });
   }
-  public getFiles() {
-    let files = [];
-    const p = new Promise<any> ((resolve, reject) => {
+
+  public async apiResult (path: string, objectName: string, params: any = { }) {
+    const requestPage = async () => new Promise<any> ((resolve, reject) => {
       gapi.load('auth2:client', () => {
         gapi.client.request({
-          path: 'https://www.googleapis.com/drive/v3/files',
+          path: path,
+          params: params
         }).then(response => {
-          resolve(response.result.files);
+          // resolve this promise with the first key in the response object.
+          resolve(response.result);
         }, reason => {
-          console.log(reason.result);
+          console.log(reason);
           reject(reason.result);
         });
       });
     });
-    p.then(result => {
-       for (let file of result) {
-         files.push(file);
-       }
-    });
-    return files;
-  }
-  public listCourses() {
-    let courses = [];
-    const p = new Promise<any> ((resolve, reject) => {
-      gapi.load('auth2:client', () => {
-        gapi.client.request({
-          path: 'https://classroom.googleapis.com/v1/courses',
-          params: {
-            teacherId: 'me'
-          }
-        }).then(response => {
-          resolve(response.result.courses);
-        }, reason => {
-          console.log(reason.result);
-          reject(reason.result);
-        });
-      });
-    });
-    p.then(result => {
-      for (let course of result) {
-        courses.push(course);
+
+    let returnArray: string[] = [];
+    do {
+      const page = await requestPage();
+      if (page.hasOwnProperty(objectName)) {
+        for (let obj of page[objectName]) {
+          returnArray.push(obj);
+        }
       }
-    });
-    return courses;
-  }
-  public listStudents(courseId) {
-    let students = [];
-    const p = new Promise<any> ((resolve, reject) => {
-      gapi.load('auth2:client', () => {
-        gapi.client.request({
-          path: 'https://classroom.googleapis.com/v1/courses/' + courseId + '/students',
-        }).then(response => {
-          resolve(response.result.students);
-        }, reason => {
-          console.log(reason.result);
-          reject(reason.result);
-        });
-      });
-    });
-    p.then(result => {
-      for (let student of result) {
-        students.push(student);
+      if (page.hasOwnProperty('nextPageToken')) {
+        params.pageToken = page.nextPageToken;
+      } else {
+        params.pageToken = null;
       }
-    });
-    return students;
+    } while (params.pageToken);
+    return returnArray;
   }
 }

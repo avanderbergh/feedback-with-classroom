@@ -12,7 +12,12 @@ export class CourseListComponent implements OnInit {
   constructor(private googleApi: GoogleApiService) { }
 
   ngOnInit() {
-    this.courses = this.googleApi.listCourses();
+    let url = 'https://classroom.googleapis.com/v1/courses';
+    let obj = 'courses';
+    let params = {teacherId: 'me'};
+    this.googleApi.apiResult(url, obj, params).then(
+      result => this.courses = result,
+      err => console.log(err)
+    );
   }
-
 }

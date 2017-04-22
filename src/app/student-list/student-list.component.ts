@@ -19,8 +19,12 @@ export class StudentListComponent implements OnInit {
 
   ngOnInit() {
     this.sub = this.route.params.subscribe(params => {
-      this.students = this.googleApi.listStudents(+params['id']);
+      const url = `https://classroom.googleapis.com/v1/courses/${params['id']}/students`;
+      const obj = 'students';
+      this.googleApi.apiResult(url, obj).then(
+        result => this.students = result,
+        err => console.log(err)
+      );
     });
   }
-
 }
