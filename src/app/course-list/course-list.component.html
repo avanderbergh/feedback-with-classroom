@@ -1,5 +1,5 @@
 <ul *ngIf="courses">
-  <li *ngFor="let course of courses">
-    <a [routerLink]="['/c', course.id]">{{ course.name }}</a>
+  <li *ngFor="let course of courses" (click)="onSelect(course)">
+    {{ course.name }}
   </li>
 </ul>

@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { GoogleApiService } from '../google-api.service';
+import { DataService } from '../data.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-course-list',
@@ -9,7 +11,11 @@ import { GoogleApiService } from '../google-api.service';
 export class CourseListComponent implements OnInit {
 
   courses;
-  constructor(private googleApi: GoogleApiService) { }
+  constructor(
+    private googleApi: GoogleApiService,
+    private dataService: DataService,
+    private router: Router
+    ) { }
 
   ngOnInit() {
     const url = 'https://classroom.googleapis.com/v1/courses';
@@ -19,5 +25,10 @@ export class CourseListComponent implements OnInit {
       result => this.courses = result,
       err => console.log(err)
     );
+  }
+
+  onSelect (course: any) {
+    this.dataService.selectedCourse = course;
+    this.router.navigate(['c/', course.id]);
   }
 }
