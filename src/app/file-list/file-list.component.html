@@ -1,3 +1,10 @@
-<p>
-  file-list works!
-</p>
+<ul *ngIf="files">
+  <li *ngFor="let file of files">
+    {{ file.name }}
+    <ul *ngIf="file.comments">
+      <li *ngFor="let comment of file.comments">
+        {{ comment.quotedFileContent.value }}: {{ comment.content }}
+      </li>
+    </ul>
+  </li>
+</ul>

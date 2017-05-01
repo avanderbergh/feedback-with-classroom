@@ -6,6 +6,7 @@ export class DataService {
 
   foo;
   selectedCourse;
+  selectedStudent;
 
   private dataStringSource = new Subject<string>();
 

@@ -64,7 +64,47 @@ export class GoogleApiService {
     });
   }
 
-  public async apiResult (path: string, objectName: string, params: any = { }) {
+  public async list (path: string, objectName: string, params: any = { }) {
+    const requestPage = async () => new Promise<any> ((resolve, reject) => {
+      gapi.load('auth2:client', () => {
+        gapi.client.request({
+          path: path,
+          params: params
+        }).then(response => {
+          // resolve this promise with the first key in the response object.
+          resolve(response.result);
+        }, reason => {
+          reject(reason.result);
+        });
+      });
+    });
+
+    let returnArray: any[] = [];
+    let err;
+    do {
+      err = null;
+      const page = await requestPage().catch(reason => {
+        err = reason.error.code;
+        console.log('error code', err);
+        params.pageToken = null;
+      });
+      if (page) {
+        if (page.hasOwnProperty(objectName)) {
+          for (let obj of page[objectName]) {
+            returnArray.push(obj);
+          }
+        }
+        if (page.hasOwnProperty('nextPageToken')) {
+          params.pageToken = page.nextPageToken;
+        } else {
+          params.pageToken = null;
+        }
+      }
+    } while (params.pageToken && !err);
+    return returnArray;
+  }
+
+  public async get (path: string, params: any = {}) {
     const requestPage = async () => new Promise<any> ((resolve, reject) => {
       gapi.load('auth2:client', () => {
         gapi.client.request({
@@ -79,21 +119,11 @@ export class GoogleApiService {
         });
       });
     });
+    return await requestPage();
+  }
 
-    let returnArray: string[] = [];
-    do {
-      const page = await requestPage();
-      if (page.hasOwnProperty(objectName)) {
-        for (let obj of page[objectName]) {
-          returnArray.push(obj);
-        }
-      }
-      if (page.hasOwnProperty('nextPageToken')) {
-        params.pageToken = page.nextPageToken;
-      } else {
-        params.pageToken = null;
-      }
-    } while (params.pageToken);
-    return returnArray;
+  public batchApiResult(fileIds: string[]) {
+    gapi.load('auth2:client', () => {
+    });
   }
 }

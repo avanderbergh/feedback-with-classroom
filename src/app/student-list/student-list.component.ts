@@ -9,26 +9,45 @@ import { DataService } from '../data.service';
   styleUrls: ['./student-list.component.css']
 })
 export class StudentListComponent implements OnInit {
-  students;
-  dataString;
+  students: any[] = [];
   private sub: any;
   private selectedId: number;
   constructor(
-    private googleApi: GoogleApiService,
-    private route: ActivatedRoute,
     private router: Router,
-    private dataService: DataService
+    private route: ActivatedRoute,
+    private dataService: DataService,
+    private googleApi: GoogleApiService
   ) { }
 
   ngOnInit() {
-    console.log(this.dataService.selectedCourse);
     this.sub = this.route.params.subscribe(params => {
-      const url = `https://classroom.googleapis.com/v1/courses/${params['id']}/students`;
-      const obj = 'students';
-      this.googleApi.apiResult(url, obj).then(
-        result => this.students = result,
-        err => console.log(err)
-      );
+      const coursePromise = new Promise<any> ((resolve, reject) => {
+        if (!this.dataService.selectedCourse) {
+          const url = `https://classroom.googleapis.com/v1/courses/${params['id']}`;
+          this.googleApi.get(url).then(
+            result => {
+              this.dataService.selectedCourse = result;
+              resolve(result);
+            }, reason => {
+              reject(reason);
+            }
+          );
+        } else {
+          resolve(this.dataService.selectedCourse);
+        };
+      });
+      coursePromise.then(() => {
+        const url = `https://classroom.googleapis.com/v1/courses/${params['id']}/students`;
+        const obj = 'students';
+        this.googleApi.list(url, obj).then(
+          result => this.students = result,
+          err => console.log(err)
+        );
+      });
     });
+  }
+  onSelect(student: any) {
+    this.dataService.selectedStudent = student;
+    this.router.navigate(['s', student.userId, 'files'], {relativeTo: this.route});
   }
 }

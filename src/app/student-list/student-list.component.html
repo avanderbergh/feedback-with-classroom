@@ -1,5 +1,6 @@
 <router-outlet></router-outlet>
 <ul *ngIf="students">
-  <li *ngFor="let student of students">
-    <a [routerLink]="[student.userId+'/files', {foo: 'bar'}]">{{ student.profile.name.fullName }}</a></li>
+  <li *ngFor="let student of students" (click)="onSelect(student)">
+    {{ student.profile.name.fullName }}
+  </li>
 </ul>

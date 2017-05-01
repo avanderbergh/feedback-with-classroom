@@ -27,7 +27,7 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       {
-        path: ':id/files',
+        path: 's/:id/files',
         component: FileListComponent
       }
     ]

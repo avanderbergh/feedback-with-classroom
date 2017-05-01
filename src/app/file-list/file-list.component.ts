@@ -10,32 +10,81 @@ import { Subscription } from 'rxjs/Subscription';
   styleUrls: ['./file-list.component.css']
 })
 export class FileListComponent implements OnInit {
-  files;
-  dataString;
-  subsciption: Subscription;
+  files: any[] = [];
+  courseId: string;
+  studnetId: string;
   private sub: any;
   constructor(
     private router: Router,
     private route: ActivatedRoute,
     private googleApi: GoogleApiService,
     private dataService: DataService
-  ) {
-    this.subsciption = dataService.dataString$.subscribe(
-      dataString => {
-        this.dataString = dataString;
-      }
-    );
-  }
+  ) { }
 
   ngOnInit() {
-    console.log('dataString: ', this.dataString);
-    console.log('foo: ', this.dataService.foo);
-    this.sub = this.route.params.subscribe(params => {
+    const coursePromise = new Promise<any> ((resolve, reject) => {
+      this.route.parent.params.subscribe(params => {
+        this.courseId = params['id'];
+        if (!this.dataService.selectedCourse) {
+          const url = `https://classroom.googleapis.com/v1/courses/${this.courseId}`;
+          this.googleApi.get(url).then(
+            result => {
+              this.dataService.selectedCourse = result;
+              resolve(result); }
+          );
+        } else {
+          resolve(this.dataService.selectedCourse);
+        }
+      });
+    });
+    const studentPromise = new Promise<any> ((resolve, reject) => {
+      this.sub = this.route.params.subscribe(params => {
+        this.studnetId = params['id'];
+        if (!this.dataService.selectedStudent) {
+          const url = `https://classroom.googleapis.com/v1/courses/${this.courseId}/students/${this.studnetId}`;
+          this.googleApi.get(url).then(
+            result => {
+              this.dataService.selectedStudent = result;
+              resolve(result);
+            }
+          );
+        } else {
+          resolve(this.dataService.selectedStudent);
+        }
+      });
+    });
+    Promise.all([studentPromise, coursePromise]).then(() => {
+      const teacherGroupEmail = this.dataService.selectedCourse.teacherGroupEmail;
+      const emailAddress = this.dataService.selectedStudent.profile.emailAddress;
       const url = 'https://www.googleapis.com/drive/v3/files';
-      const obj = 'items';
+      const obj = 'files';
       const p = {
-        q: ''
+        q: `'${teacherGroupEmail}' in writers
+            and (
+              '${emailAddress}' in readers or
+              '${emailAddress}' in owners
+            )`
       };
+      this.googleApi.list(url, obj, p).then(
+        files => {
+          for (const file of files) {
+            const url = `https://www.googleapis.com/drive/v3/files/${file.id}/comments`;
+            const obj = 'comments';
+            const p = { fields: '*' };
+            this.googleApi.list(url, obj, p).then(
+              comments => {
+                let newFile:any = { };
+                newFile.id = file.id;
+                newFile.name = file.name;
+                newFile.comments = comments;
+                this.files.push(newFile);
+              }
+            );
+          }
+          // this.files = files;
+        },
+        err => console.log(err)
+      );
     });
   }
 
