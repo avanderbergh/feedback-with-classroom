@@ -1,6 +1,12 @@
-<router-outlet></router-outlet>
-<ul *ngIf="students">
-  <li *ngFor="let student of students" (click)="onSelect(student)">
-    {{ student.profile.name.fullName }}
-  </li>
-</ul>
+<div class="courseListLayout">
+  <div style="width: 44em;">
+    <md-list *ngIf="students">
+      <md-list-item *ngFor="let student of students" (click)="onSelect(student)">
+        {{ student.profile.name.fullName }}
+      </md-list-item>
+    </md-list>
+  </div>
+  <div>
+    <router-outlet></router-outlet>
+  </div>
+</div>

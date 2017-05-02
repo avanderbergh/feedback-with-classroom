@@ -74,7 +74,7 @@ export class GoogleApiService {
           // resolve this promise with the first key in the response object.
           resolve(response.result);
         }, reason => {
-          reject(reason.result);
+          resolve(false);
         });
       });
     });
@@ -82,12 +82,10 @@ export class GoogleApiService {
     let returnArray: any[] = [];
     let err;
     do {
-      err = null;
-      const page = await requestPage().catch(reason => {
-        err = reason.error.code;
-        console.log('error code', err);
-        params.pageToken = null;
-      });
+      console.log('Starting...');
+      let page: any = {};
+      err = false;
+      page = await requestPage();
       if (page) {
         if (page.hasOwnProperty(objectName)) {
           for (let obj of page[objectName]) {
@@ -99,8 +97,12 @@ export class GoogleApiService {
         } else {
           params.pageToken = null;
         }
+      } else {
+        console.log('no page!');
+        err = true;
+        params.pageToken = null;
       }
-    } while (params.pageToken && !err);
+    } while (params.pageToken || err);
     return returnArray;
   }
 
