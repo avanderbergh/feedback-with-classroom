@@ -20,30 +20,24 @@ import { StudentListComponent } from './student-list/student-list.component';
 import { FileListComponent } from './file-list/file-list.component';
 import 'hammerjs';
 
-export const firebaseConfig = {
-  apiKey: 'AIzaSyC3FfmyAI4BkxSj6Ow7KkJZ_OxwhAuAo40',
-  authDomain: 'brilliant-badger.firebaseapp.com',
-  databaseURL: 'https://brilliant-badger.firebaseio.com',
-  storageBucket: 'brilliant-badger.appspot.com',
-  messagingSenderId: '279180053002'
-};
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
+    FileListComponent,
     CourseListComponent,
-    StudentListComponent,
-    FileListComponent
+    StudentListComponent
   ],
   imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    FormsModule,
     HttpModule,
+    FormsModule,
+    BrowserModule,
     AppRoutingModule,
-    AngularFireModule.initializeApp(firebaseConfig),
     AngularFireAuthModule,
+    BrowserAnimationsModule,
+    AngularFireModule.initializeApp(environment.firebase),
     MdCardModule, MdToolbarModule, MdGridListModule, MdListModule
   ],
   providers: [GoogleApiService, AuthGuard],
