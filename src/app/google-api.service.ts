@@ -2,11 +2,14 @@
 /// <reference types="gapi.auth2" />
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { AngularFire } from 'angularfire2';
+import { Observable } from 'rxjs/observable';
+import { AngularFireAuthModule, AngularFireAuth } from 'angularfire2/auth';
+import * as firebase from 'firebase/app';
 
 @Injectable()
 export class GoogleApiService {
 
+  user: Observable<firebase.User>;
   public client_id = '279180053002-8f0275sgal1ebfh27v6sp01nql52lf86.apps.googleusercontent.com';
   public api_key = 'AIzaSyC3FfmyAI4BkxSj6Ow7KkJZ_OxwhAuAo40';
   public scope = [
@@ -20,7 +23,10 @@ export class GoogleApiService {
     'https://www.googleapis.com/auth/classroom.rosters.readonly',
     'https://www.googleapis.com/auth/classroom.student-submissions.students.readonly'
   ].join(' ');
-  constructor(private af: AngularFire, private router: Router) { }
+  constructor(
+    private router: Router,
+    public afAuth: AngularFireAuth
+  ) { this.user = afAuth.authState; }
   public signIn() {
     gapi.load('auth2', () => {
         gapi.auth2.init({
@@ -51,9 +57,9 @@ export class GoogleApiService {
           // Check if the user is signed in with the gapi.
           if (gapi.auth2.getAuthInstance().isSignedIn.get()) {
             // If the user is signed in with gapi, also sign them in with firebase auth.
-            this.af.auth.subscribe(authObject => {
-              if (!authObject) {this.af.auth.login(); }
-            });
+            if (!this.afAuth.authState) {
+              this.afAuth.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
+            }
             resolve(true);
           } else {
             this.router.navigate(['/login']);
