@@ -63,7 +63,8 @@ export class FileListComponent implements OnInit {
             and (
               '${emailAddress}' in readers or
               '${emailAddress}' in owners
-            )`
+            )`,
+        fields: 'files(iconLink,id,name,thumbnailLink,webViewLink),nextPageToken'
       };
       this.googleApi.list(url, obj, p).then(
         files => {
@@ -76,6 +77,9 @@ export class FileListComponent implements OnInit {
                 let newFile:any = { };
                 newFile.id = file.id;
                 newFile.name = file.name;
+                newFile.webViewLink = file.webViewLink;
+                newFile.iconLink = file.iconLink;
+                newFile.thumbnailLink = file.thumbnailLink;
                 newFile.comments = comments;
                 this.files.push(newFile);
               }

@@ -1,10 +1,29 @@
-<ul *ngIf="files">
-  <li *ngFor="let file of files">
-    {{ file.name }}
-    <ul *ngIf="file.comments">
-      <li *ngFor="let comment of file.comments">
-        {{ comment.quotedFileContent.value }}: {{ comment.content }}
-      </li>
-    </ul>
-  </li>
-</ul>
+<div *ngIf="files">
+  <md-card *ngFor="let file of files" class="file-card">
+    <md-card-header>
+      <md-card-title>
+        <img [src]="file.iconLink">
+        <a [href]="file.webViewLink" target="_blank">{{ file.name }}</a>
+      </md-card-title>
+    </md-card-header>
+    
+    <md-card-content>
+      <div *ngIf="file.comments.length > 0">
+        <md-card class="comments-card" *ngFor="let comment of file.comments">
+            <md-card-header>
+              <img md-card-avatar [src]="comment.author.photoLink">
+              <md-card-title>
+                {{ comment.author.displayName }}
+              </md-card-title>
+              <md-card-subtitle>
+                {{ comment.createdTime | date:"MM/dd/yy" }}
+              </md-card-subtitle>
+            </md-card-header>
+            <md-card-content>
+              <p> {{ comment.content}}</p>
+            </md-card-content>
+        </md-card>
+      </div>
+    </md-card-content>
+  </md-card>
+</div>

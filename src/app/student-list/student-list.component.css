@@ -1,3 +1,7 @@
 .courseListLayout {
     display: flex;
 }
+
+.stuudent-list {
+    width: 22rem;
+}

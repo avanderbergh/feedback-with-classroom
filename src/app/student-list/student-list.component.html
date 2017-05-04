@@ -1,12 +1,8 @@
 <div class="courseListLayout">
-  <div style="width: 44em;">
-    <md-list *ngIf="students">
-      <md-list-item *ngFor="let student of students" (click)="onSelect(student)">
-        {{ student.profile.name.fullName }}
-      </md-list-item>
-    </md-list>
-  </div>
-  <div>
-    <router-outlet></router-outlet>
-  </div>
+  <md-list class="student-list" *ngIf="students">
+    <md-list-item *ngFor="let student of students" (click)="onSelect(student)">
+      {{ student.profile.name.fullName }}
+    </md-list-item>
+  </md-list>
+  <router-outlet></router-outlet>
 </div>
