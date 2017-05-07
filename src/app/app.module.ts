@@ -26,7 +26,6 @@ import { FileListComponent } from './file-list/file-list.component';
 import 'hammerjs';
 
 import { environment } from '../environments/environment';
-import { SortByDatePipe } from './sort-by-date.pipe';
 
 @NgModule({
   declarations: [
