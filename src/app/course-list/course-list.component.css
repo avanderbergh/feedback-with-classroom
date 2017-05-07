@@ -1,0 +1,14 @@
+.course-card {
+    width: 100%;
+    margin: 1rem;
+}
+
+.course-card a {
+    text-decoration: none;
+}
+
+.course-title {
+    color: black;
+    font-weight: 500;
+    cursor: pointer;
+}

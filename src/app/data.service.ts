@@ -1,18 +1,15 @@
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 @Injectable()
 export class DataService {
 
-  foo;
   selectedCourse;
-  selectedStudent;
+  private selectedStudent = new BehaviorSubject<any>({});
 
-  private dataStringSource = new Subject<string>();
+  studentSelected$ = this.selectedStudent.asObservable();
 
-  dataString$ = this.dataStringSource.asObservable();
-
-  changeData(newData: string) {
-    this.dataStringSource.next(newData);
+  selectStudent(student: any) {
+    this.selectedStudent.next(student);
   }
 }

@@ -35,7 +35,7 @@ export class GoogleApiService {
         }).then(() => {
           gapi.signin2.render('my-signin2', {
             'scope': this.scope,
-            'width': 240,
+            'width': 560,
             'height': 50,
             'longtitle': true,
             'theme': 'light',

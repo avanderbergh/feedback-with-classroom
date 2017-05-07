@@ -1,6 +1,9 @@
 <div flex>
     <md-toolbar color="primary">
-        <span>Comments with Classroom</span>
+        <a [routerLink]="['h']" class="title">
+            <i class="material-icons">comment</i>
+            <span>&nbsp;Comments with Classroom</span>
+        </a>
     </md-toolbar>
     <router-outlet></router-outlet>
 </div>

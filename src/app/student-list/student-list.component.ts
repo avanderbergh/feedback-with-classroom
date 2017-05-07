@@ -47,7 +47,8 @@ export class StudentListComponent implements OnInit {
     });
   }
   onSelect(student: any) {
-    this.dataService.selectedStudent = student;
-    this.router.navigate(['s', student.userId, 'files'], {relativeTo: this.route});
+    this.router.navigate(['s', student.userId, 'files'], {relativeTo: this.route}).then(() => {
+      this.dataService.selectStudent(student);
+    });
   }
 }

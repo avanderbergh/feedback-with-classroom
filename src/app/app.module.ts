@@ -11,7 +11,12 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 
-import { MdCardModule, MdToolbarModule, MdGridListModule, MdListModule, MdTooltipModule } from '@angular/material';
+import { MdCardModule,
+  MdToolbarModule,
+  MdGridListModule,
+  MdListModule,
+  MdTooltipModule,
+  MdButtonModule } from '@angular/material';
 
 import { GoogleApiService } from './google-api.service';
 import { AuthGuard } from './auth-guard.service';
@@ -38,7 +43,7 @@ import { environment } from '../environments/environment';
     AngularFireAuthModule,
     BrowserAnimationsModule,
     AngularFireModule.initializeApp(environment.firebase),
-    MdCardModule, MdToolbarModule, MdGridListModule, MdListModule, MdTooltipModule
+    MdCardModule, MdToolbarModule, MdGridListModule, MdListModule, MdTooltipModule, MdButtonModule
   ],
   providers: [GoogleApiService, AuthGuard],
   bootstrap: [AppComponent]

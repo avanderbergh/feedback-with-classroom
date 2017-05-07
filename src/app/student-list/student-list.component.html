@@ -1,8 +1,14 @@
-<div class="courseListLayout">
-  <md-list class="student-list" *ngIf="students">
-    <md-list-item *ngFor="let student of students" (click)="onSelect(student)">
-      {{ student.profile.name.fullName }}
-    </md-list-item>
-  </md-list>
-  <router-outlet></router-outlet>
+<div class="container">
+  <div class="course-list-layout">
+    <md-card>
+      <md-list class="student-list" *ngIf="students">
+        <md-list-item *ngFor="let student of students">
+          <button md-button (click)="onSelect(student)"> 
+              {{ student.profile.name.fullName }}
+          </button>
+        </md-list-item>
+      </md-list>
+    </md-card>
+    <router-outlet></router-outlet>
+  </div>
 </div>

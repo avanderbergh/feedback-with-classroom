@@ -1,7 +1,12 @@
-<md-grid-list cols="4" rowHeight="2:1" *ngIf="courses">
-  <md-grid-tile *ngFor="let course of courses" (click)="onSelect(course)">
-      <md-card>
-        <md-card-title>{{ course.name }}</md-card-title>
-      </md-card>
-  </md-grid-tile>
-</md-grid-list>
+<div class="container">
+  <md-grid-list cols="3" rowHeight="2:1" *ngIf="courses">
+    <md-grid-tile *ngFor="let course of courses">
+        <md-card class="course-card" (click)="onSelect(course)">
+          <md-card-header>
+              <md-card-title class="course-title">{{ course.name }}</md-card-title>
+              <md-card-subtitle>{{ course.section }}</md-card-subtitle>
+          </md-card-header>
+        </md-card>
+    </md-grid-tile>
+  </md-grid-list>
+</div>

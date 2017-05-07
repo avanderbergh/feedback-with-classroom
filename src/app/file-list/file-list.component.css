@@ -1,5 +1,7 @@
 .file-card {
-    margin: 3em;
+    width: 100%;
+    margin-left: 2em;
+    margin-bottom: 2em;
 }
 
 .comments-card {
