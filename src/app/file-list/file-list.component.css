@@ -7,3 +7,7 @@
 .comments-card {
     margin: 1em;
 }
+.replies-card {
+    border-top: 1px solid #eee;
+    padding-top: 1em;
+}

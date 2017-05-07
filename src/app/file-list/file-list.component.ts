@@ -66,29 +66,25 @@ export class FileListComponent implements OnInit {
         const url = 'https://www.googleapis.com/drive/v3/files';
         const obj = 'files';
         const p = {
+          orderBy: 'createdTime,name',
           q: `'${teacherGroupEmail}' in writers
               and (
                 '${emailAddress}' in readers or
                 '${emailAddress}' in owners
               )`,
-          fields: 'files(iconLink,id,name,thumbnailLink,webViewLink),nextPageToken'
+          fields: 'files(iconLink,id,name,thumbnailLink,webViewLink,createdTime),nextPageToken'
         };
         this.googleApi.list(url, obj, p).then(
           files => {
+            console.log(files);
+            this.files = files;
             for (const file of files) {
               const url = `https://www.googleapis.com/drive/v3/files/${file.id}/comments`;
               const obj = 'comments';
               const p = { fields: '*' };
               this.googleApi.list(url, obj, p).then(
                 comments => {
-                  const newFile: any = { };
-                  newFile.id = file.id;
-                  newFile.name = file.name;
-                  newFile.webViewLink = file.webViewLink;
-                  newFile.iconLink = file.iconLink;
-                  newFile.thumbnailLink = file.thumbnailLink;
-                  newFile.comments = comments;
-                  this.files.push(newFile);
+                  file.comments = comments;
                 }
               );
             }
