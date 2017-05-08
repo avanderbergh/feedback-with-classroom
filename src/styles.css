@@ -10,3 +10,11 @@ body {
     padding-left: 5rem;
     padding-right: 5rem;
 }
+
+.loading-spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -50px;
+    margin-left: -50px;
+}

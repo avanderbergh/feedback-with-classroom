@@ -16,7 +16,8 @@ import { MdCardModule,
   MdGridListModule,
   MdListModule,
   MdTooltipModule,
-  MdButtonModule } from '@angular/material';
+  MdButtonModule,
+  MdProgressSpinnerModule } from '@angular/material';
 
 import { GoogleApiService } from './google-api.service';
 import { AuthGuard } from './auth-guard.service';
@@ -43,7 +44,13 @@ import { environment } from '../environments/environment';
     AngularFireAuthModule,
     BrowserAnimationsModule,
     AngularFireModule.initializeApp(environment.firebase),
-    MdCardModule, MdToolbarModule, MdGridListModule, MdListModule, MdTooltipModule, MdButtonModule
+    MdCardModule,
+    MdToolbarModule,
+    MdGridListModule,
+    MdListModule,
+    MdTooltipModule,
+    MdButtonModule,
+    MdProgressSpinnerModule
   ],
   providers: [GoogleApiService, AuthGuard],
   bootstrap: [AppComponent]

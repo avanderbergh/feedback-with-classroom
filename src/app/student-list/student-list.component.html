@@ -1,5 +1,5 @@
 <div class="container">
-  <div class="course-list-layout">
+  <div class="course-list-layout" *ngIf="students.length > 0; else elseBlock">
     <md-card>
       <md-list class="student-list" *ngIf="students">
         <md-list-item *ngFor="let student of students">
@@ -11,4 +11,9 @@
     </md-card>
     <router-outlet></router-outlet>
   </div>
+  <ng-template #elseBlock>
+    <div class="loading-spinner">
+      <md-spinner mode="indeterminate"></md-spinner>
+    </div>
+  </ng-template>
 </div>

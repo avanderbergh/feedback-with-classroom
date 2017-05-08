@@ -1,5 +1,5 @@
 <div class="container">
-  <md-grid-list cols="3" rowHeight="2:1" *ngIf="courses">
+  <md-grid-list cols="3" rowHeight="2:1" *ngIf="courses; else elseBlock">
     <md-grid-tile *ngFor="let course of courses">
         <md-card class="course-card" (click)="onSelect(course)">
           <md-card-header>
@@ -9,4 +9,9 @@
         </md-card>
     </md-grid-tile>
   </md-grid-list>
+  <ng-template #elseBlock>
+    <div class="loading-spinner">
+      <md-spinner mode="indeterminate"></md-spinner>
+    </div>
+  </ng-template>
 </div>

@@ -1,4 +1,4 @@
-<div *ngIf="files">
+<div *ngIf="files.length > 0; else elseBlock">
   <md-card *ngFor="let file of files" class="file-card">
     <md-card-header>
       <md-card-title>
@@ -42,3 +42,8 @@
     </md-card-content>
   </md-card>
 </div>
+<ng-template #elseBlock>
+  <div class="loading-spinner">
+      <md-spinner mode="indeterminate"></md-spinner>
+  </div>
+</ng-template>
