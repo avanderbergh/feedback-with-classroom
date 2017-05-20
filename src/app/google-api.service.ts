@@ -45,7 +45,7 @@ export class GoogleApiService {
       });
   }
   public onSignIn(googleUser) {
-      setTimeout(this.router.navigate(['h']), 1000);
+    window.setTimeout(() => this.router.navigate(['h']), 1000);
   }
   public isSignedIn(): Promise<boolean> {
     return new Promise(resolve => {
