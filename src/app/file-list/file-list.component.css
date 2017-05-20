@@ -1,18 +1,15 @@
 .file-card {
-    width: 100%;
-    margin-left: 2em;
-    margin-bottom: 2em;
+    margin-left: 20px;
+    margin-bottom: 5px;
 }
 
-.file-no-comments-card {
-    width: 100%;
-    margin-left: 4em;
-    margin-bottom: 0.5em;
+.file-card-no-comments {
+    margin-left: 20px;
+    margin-bottom: 5px;
     font-size: 50%;
-    padding: 1em;
     color: #888;
+    padding: 0.5em;
 }
-
 .comments-card {
     margin: 1em;
 }
