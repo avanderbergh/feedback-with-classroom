@@ -11,6 +11,7 @@ import { Subscription } from 'rxjs/Subscription';
 })
 export class FileListComponent implements AfterViewInit {
   files: any[] = [];
+  loading = false;
   courseId: string;
   studnetId: number;
   private courseParamSub: any;
@@ -60,6 +61,7 @@ export class FileListComponent implements AfterViewInit {
       });
       this.files = [];
       Promise.all([studentPromise, coursePromise]).then(result => {
+        this.loading = true;
         const selectedStudent = result[0];
         const teacherGroupEmail = this.dataService.selectedCourse.teacherGroupEmail;
         const emailAddress = selectedStudent.profile.emailAddress;
@@ -88,8 +90,12 @@ export class FileListComponent implements AfterViewInit {
                 }
               );
             }
+            this.loading = false;
           },
-          err => console.log(err)
+          err => {
+            console.log(err);
+            this.loading = false;
+          }
         );
       });
     });

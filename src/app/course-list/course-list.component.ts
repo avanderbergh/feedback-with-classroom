@@ -11,6 +11,7 @@ import { GoogleApiService } from '../google-api.service';
 export class CourseListComponent implements AfterViewInit {
 
   courses;
+  loading = false;
   constructor(
     private router: Router,
     private dataService: DataService,
@@ -21,9 +22,16 @@ export class CourseListComponent implements AfterViewInit {
     const url = 'https://classroom.googleapis.com/v1/courses';
     const obj = 'courses';
     const params = {teacherId: 'me'};
+    this.loading = true;
     this.googleApi.list(url, obj, params).then(
-      result => this.courses = result,
-      err => console.log(err)
+      result => {
+        this.loading = false;
+        this.courses = result;
+      },
+      err => {
+        this.loading = false;
+        console.log(err);
+      }
     );
   }
 

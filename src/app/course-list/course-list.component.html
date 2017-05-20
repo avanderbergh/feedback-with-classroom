@@ -1,17 +1,20 @@
 <div class="container">
-  <md-grid-list cols="3" rowHeight="2:1" *ngIf="courses; else elseBlock">
-    <md-grid-tile *ngFor="let course of courses">
-        <md-card class="course-card" (click)="onSelect(course)">
-          <md-card-header>
-              <md-card-title class="course-title">{{ course.name }}</md-card-title>
-              <md-card-subtitle>{{ course.section }}</md-card-subtitle>
-          </md-card-header>
-        </md-card>
-    </md-grid-tile>
-  </md-grid-list>
-  <ng-template #elseBlock>
-    <div class="loading-spinner">
+  <div class="loading-spinner" *ngIf="loading; else loaded">
       <md-spinner mode="indeterminate"></md-spinner>
-    </div>
+  </div>
+  <ng-template #loaded>
+    <md-grid-list cols="3" rowHeight="2:1" *ngIf="courses; else elseBlock">
+      <md-grid-tile *ngFor="let course of courses">
+          <md-card class="course-card" (click)="onSelect(course)">
+            <md-card-header>
+                <md-card-title class="course-title">{{ course.name }}</md-card-title>
+                <md-card-subtitle>{{ course.section }}</md-card-subtitle>
+            </md-card-header>
+          </md-card>
+      </md-grid-tile>
+    </md-grid-list>
+    <ng-template #elseBlock>
+      <p>No Courses could be found. Please create a course at classroom.google.com</p>
+    </ng-template>
   </ng-template>
 </div>

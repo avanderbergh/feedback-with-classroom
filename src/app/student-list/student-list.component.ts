@@ -10,6 +10,7 @@ import { DataService } from '../data.service';
 })
 export class StudentListComponent implements AfterViewInit {
   students: any[] = [];
+  loading = false;
   private sub: any;
   private selectedId: number;
   constructor(
@@ -37,11 +38,18 @@ export class StudentListComponent implements AfterViewInit {
         };
       });
       coursePromise.then(() => {
+        this.loading = true;
         const url = `https://classroom.googleapis.com/v1/courses/${params['id']}/students`;
         const obj = 'students';
         this.googleApi.list(url, obj).then(
-          result => this.students = result,
-          err => console.log(err)
+          result => {
+            this.loading = false;
+            this.students = result;
+          },
+          err => {
+            console.log(err);
+            this.loading = false;
+          }
         );
       });
     });
