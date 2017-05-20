@@ -1,6 +1,6 @@
 <div class="container">
-  <div class="course-list-layout" *ngIf="students.length > 0; else elseBlock">
-    <md-card>
+  <div class="course-list-layout">
+    <md-card *ngIf="students.length > 0; else elseBlock">
       <md-list class="student-list" *ngIf="students">
         <md-list-item *ngFor="let student of students">
           <button md-button (click)="onSelect(student)"> 
@@ -9,11 +9,11 @@
         </md-list-item>
       </md-list>
     </md-card>
+    <ng-template #elseBlock>
+      <div class="loading-spinner">
+        <md-spinner mode="indeterminate"></md-spinner>
+      </div>
+    </ng-template>
     <router-outlet></router-outlet>
   </div>
-  <ng-template #elseBlock>
-    <div class="loading-spinner">
-      <md-spinner mode="indeterminate"></md-spinner>
-    </div>
-  </ng-template>
 </div>

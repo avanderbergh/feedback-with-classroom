@@ -1,4 +1,4 @@
-import { Component, OnInit, DoCheck } from '@angular/core';
+import { Component, OnInit, AfterViewInit ,DoCheck } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { GoogleApiService } from '../google-api.service';
 import { DataService } from '../data.service';
@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs/Subscription';
   templateUrl: './file-list.component.html',
   styleUrls: ['./file-list.component.css']
 })
-export class FileListComponent implements OnInit {
+export class FileListComponent implements AfterViewInit {
   files: any[] = [];
   courseId: string;
   studnetId: number;
@@ -22,7 +22,7 @@ export class FileListComponent implements OnInit {
     private dataService: DataService
   ) { }
 
-  ngOnInit() {
+  ngAfterViewInit() {
     this.dataService.studentSelected$.subscribe(student => {
       console.log(student);
       const coursePromise = new Promise<any> ((resolve, reject) => {

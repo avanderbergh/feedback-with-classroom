@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { GoogleApiService } from '../google-api.service';
 import { DataService } from '../data.service';
@@ -8,7 +8,7 @@ import { DataService } from '../data.service';
   templateUrl: './student-list.component.html',
   styleUrls: ['./student-list.component.css']
 })
-export class StudentListComponent implements OnInit {
+export class StudentListComponent implements AfterViewInit {
   students: any[] = [];
   private sub: any;
   private selectedId: number;
@@ -19,7 +19,7 @@ export class StudentListComponent implements OnInit {
     private googleApi: GoogleApiService
   ) { }
 
-  ngOnInit() {
+  ngAfterViewInit() {
     this.sub = this.route.params.subscribe(params => {
       const coursePromise = new Promise<any> ((resolve, reject) => {
         if (!this.dataService.selectedCourse) {
