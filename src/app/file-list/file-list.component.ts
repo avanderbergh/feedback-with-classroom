@@ -1,4 +1,4 @@
-import { Component, OnInit, AfterViewInit ,DoCheck } from '@angular/core';
+import { Component, OnInit, AfterViewInit , OnDestroy } from '@angular/core';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { GoogleApiService } from '../google-api.service';
 import { DataService } from '../data.service';
@@ -9,11 +9,12 @@ import { Subscription } from 'rxjs/Subscription';
   templateUrl: './file-list.component.html',
   styleUrls: ['./file-list.component.css']
 })
-export class FileListComponent implements AfterViewInit {
+export class FileListComponent implements OnInit, OnDestroy {
   files: any[] = [];
   loading = false;
   courseId: string;
   studnetId: number;
+  private selectedStudentSub: any;
   private courseParamSub: any;
   private studentParamSub: any;
   constructor(
@@ -23,9 +24,9 @@ export class FileListComponent implements AfterViewInit {
     private dataService: DataService
   ) { }
 
-  ngAfterViewInit() {
-    this.dataService.studentSelected$.subscribe(student => {
-      console.log(student);
+  ngOnInit() {
+    this.selectedStudentSub = this.dataService.studentSelected$.subscribe(student => {
+      console.log('student: ', student);
       const coursePromise = new Promise<any> ((resolve, reject) => {
         this.courseParamSub = this.route.parent.params.subscribe(params => {
           this.courseId = params['id'];
@@ -99,5 +100,8 @@ export class FileListComponent implements AfterViewInit {
         );
       });
     });
+  }
+  ngOnDestroy() {
+    this.selectedStudentSub.complete();
   }
 }

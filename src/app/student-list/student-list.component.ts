@@ -8,7 +8,7 @@ import { DataService } from '../data.service';
   templateUrl: './student-list.component.html',
   styleUrls: ['./student-list.component.css']
 })
-export class StudentListComponent implements AfterViewInit {
+export class StudentListComponent implements OnInit {
   students: any[] = [];
   loading = false;
   private sub: any;
@@ -20,7 +20,7 @@ export class StudentListComponent implements AfterViewInit {
     private googleApi: GoogleApiService
   ) { }
 
-  ngAfterViewInit() {
+  ngOnInit() {
     this.sub = this.route.params.subscribe(params => {
       const coursePromise = new Promise<any> ((resolve, reject) => {
         if (!this.dataService.selectedCourse) {
@@ -55,8 +55,7 @@ export class StudentListComponent implements AfterViewInit {
     });
   }
   onSelect(student: any) {
-    this.router.navigate(['s', student.userId, 'files'], {relativeTo: this.route}).then(() => {
-      this.dataService.selectStudent(student);
-    });
+    this.dataService.selectStudent(student);
+    this.router.navigate(['s', student.userId, 'files'], {relativeTo: this.route});
   }
 }
