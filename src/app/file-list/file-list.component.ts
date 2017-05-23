@@ -82,9 +82,9 @@ export class FileListComponent implements OnInit, OnDestroy {
             console.log(files);
             this.files = files;
             for (const file of files) {
-              const url = `https://www.googleapis.com/drive/v3/files/${file.id}/comments`;
-              const obj = 'comments';
-              const p = { fields: '*' };
+              let url = `https://www.googleapis.com/drive/v3/files/${file.id}/comments`;
+              let obj = 'comments';
+              let p = { fields: '*' };
               this.googleApi.list(url, obj, p).then(
                 comments => {
                   file.comments = comments;
@@ -98,6 +98,18 @@ export class FileListComponent implements OnInit, OnDestroy {
             this.loading = false;
           }
         );
+        if (this.dataService.courseWork) {
+          for (const work of this.dataService.courseWork) {
+            let url = `https://classroom.googleapis.com/v1/courses/${this.courseId}/courseWork/${work.id}/studentSubmissions`;
+            let obj = 'studentSubmissions';
+            let p = { fields: '*' };
+            this.googleApi.list(url, obj, p).then(
+              submissions => {
+                console.log(submissions[0]);
+              }
+            );
+          }
+        }
       });
     });
   }

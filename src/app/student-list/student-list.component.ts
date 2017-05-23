@@ -10,6 +10,7 @@ import { DataService } from '../data.service';
 })
 export class StudentListComponent implements OnInit {
   students: any[] = [];
+  courseWork: any[] = [];
   loading = false;
   private sub: any;
   private selectedId: number;
@@ -39,8 +40,20 @@ export class StudentListComponent implements OnInit {
       });
       coursePromise.then(() => {
         this.loading = true;
-        const url = `https://classroom.googleapis.com/v1/courses/${params['id']}/students`;
-        const obj = 'students';
+        let url = `https://classroom.googleapis.com/v1/courses/${params['id']}/courseWork`;
+        let obj = 'courseWork';
+        let p = {courseWorkStates: 'PUBLISHED', fields: 'courseWork(description,id,title),nextPageToken'};
+        this.googleApi.list(url, obj, p).then(
+          result => {
+            this.dataService.courseWork = result;
+          },
+          err => {
+            console.log(err);
+          }
+        );
+
+        url = `https://classroom.googleapis.com/v1/courses/${params['id']}/students`;
+        obj = 'students';
         this.googleApi.list(url, obj).then(
           result => {
             this.loading = false;

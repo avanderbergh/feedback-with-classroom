@@ -5,6 +5,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 export class DataService {
 
   selectedCourse;
+  courseWork;
   private selectedStudent = new BehaviorSubject<any>({});
 
   studentSelected$ = this.selectedStudent.asObservable();

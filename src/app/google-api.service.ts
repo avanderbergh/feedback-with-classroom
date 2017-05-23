@@ -130,8 +130,25 @@ export class GoogleApiService {
     return await requestPage();
   }
 
-  public batchApiResult(fileIds: string[]) {
-    gapi.load('auth2:client', () => {
+  public async batchApiResult(fileIds: string[]) {
+    console.log('batch API call: ', fileIds);
+    const requestPage = async () => new Promise<any> ((resolve, reject) => {
+      console.log('In Promise');
+      gapi.load('auth2:client', () => {
+        console.log('Gapi Loaded!', fileIds);
+        let batch =  new gapi.client.HttpBatch();
+        console.log(batch);
+        for (let fileId of fileIds) {
+          console.log('FileID: ', fileId);
+          let r = gapi.client.request({
+            path: `https://www.googleapis.com/drive/v3/files/${fileId}/comments`
+          });
+          batch.add(r);
+        }
+        console.log('executing batch: ', batch);
+        batch.execute(respose => resolve(respose));
+      });
     });
+    return await requestPage();
   }
 }
