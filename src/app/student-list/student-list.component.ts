@@ -12,6 +12,7 @@ export class StudentListComponent implements OnInit {
   students: any[] = [];
   courseWork: any[] = [];
   loading = false;
+  selectedStudent: any = {};
   private sub: any;
   private selectedId: number;
   constructor(
@@ -42,7 +43,10 @@ export class StudentListComponent implements OnInit {
         this.loading = true;
         let url = `https://classroom.googleapis.com/v1/courses/${params['id']}/courseWork`;
         let obj = 'courseWork';
-        let p = {courseWorkStates: 'PUBLISHED', fields: 'courseWork(description,id,title),nextPageToken'};
+        let p = {
+          courseWorkStates: 'PUBLISHED',
+          fields: 'courseWork(description,id,title,workType,alternateLink),nextPageToken'
+        };
         this.googleApi.list(url, obj, p).then(
           result => {
             this.dataService.courseWork = result;

@@ -1,10 +1,42 @@
-.file-list {
+.coursework-list {
     flex-basis: 80rem;
 }
 
-.file-card {
+.coursework-card {
     margin-left: 20px;
     margin-bottom: 5px;
+}
+.coursework-header {
+    border-bottom: .1rem solid rgba(0 , 0, 0, .12);
+    white-space: nowrap;
+    margin-bottom: 2.4rem;
+}
+.coursework-title {
+    font-size: 2.0rem;
+    text-decoration: none;
+    cursor: pointer;
+    color: #333;
+    font-weight: 500;
+    line-height: 2.8rem;
+}
+.file {
+    padding-bottom: 1.2rem;
+    margin-bottom: 1.2rem;
+    border-bottom: .1rem solid rgba(0 , 0, 0, .12);
+}
+.file-title {
+    color: #333;
+    text-decoration: none;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.file-thumbnail {
+    vertical-align: middle;
+    margin-right: 2rem;
+    height: 3.5rem;
+    width: 5.25rem;
+    border: .1rem solid rgba(0 , 0, 0, .12);
 }
 
 .file-card-no-comments {

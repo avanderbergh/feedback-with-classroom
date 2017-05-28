@@ -71,7 +71,7 @@ export class GoogleApiService {
   }
 
   public async list (path: string, objectName: string, params: any = { }) {
-    const requestPage = async () => new Promise<any> ((resolve, reject) => {
+    const requestPage = async (tries: number) => new Promise<any> ((resolve, reject) => {
       gapi.load('auth2:client', () => {
         gapi.client.request({
           path: path,
@@ -80,18 +80,28 @@ export class GoogleApiService {
           // resolve this promise with the first key in the response object.
           resolve(response.result);
         }, reason => {
-          resolve(false);
+          console.log('failed, reason: ', reason.status);
+          if (reason.status === 404) {
+            resolve([]);
+          } else if (reason.status === 403) {
+            let waitTime = Math.round(Math.pow(2, tries) * 1000 + (Math.random() * 1000 ));
+            console.log('Try: ', tries, 'Wait time: ', waitTime);
+            setTimeout(() => resolve(false), waitTime);
+          } else {
+            resolve(false);
+          }
         });
       });
     });
 
     let returnArray: any[] = [];
     let err;
+    let tries = 0;
     do {
       console.log('Starting...');
       let page: any = {};
       err = false;
-      page = await requestPage();
+      page = await requestPage(tries);
       if (page) {
         if (page.hasOwnProperty(objectName)) {
           for (let obj of page[objectName]) {
@@ -104,8 +114,8 @@ export class GoogleApiService {
           params.pageToken = null;
         }
       } else {
-        console.log('no page!');
         err = true;
+        tries++;
         params.pageToken = null;
       }
     } while (params.pageToken || err);

@@ -1,63 +1,66 @@
-<div class="file-list">
-  <div class="loading-spinner" *ngIf="loading; else loaded">
+<div class="coursework-list">
+  <div class="loading-spinner" *ngIf="loading; else elseBlock">
     <md-spinner mode="indeterminate"></md-spinner>
   </div>
-  <ng-template #loaded>
-    <div *ngIf="files.length > 0; else noFiles">
-      <div *ngFor="let file of files">
-        <div *ngIf="file.comments">
-          <md-card *ngIf="file.comments.length > 0; else noComments" class="file-card">
-            <md-card-header>
-              <md-card-title>
-                <img [src]="file.iconLink">
-                <a [href]="file.webViewLink" target="_blank">{{ file.name }}</a>
-              </md-card-title>
-            </md-card-header>
-            <md-card-content>
-              <div>
-                <md-card class="comments-card" *ngFor="let comment of file.comments">
-                    <md-card-header>
-                      <img md-card-avatar [src]="comment.author.photoLink">
-                      <md-card-title>
-                        {{ comment.author.displayName }}
-                      </md-card-title>
-                      <md-card-subtitle>
-                        {{ comment.createdTime | date:"MM/dd/yy" }}
-                      </md-card-subtitle>
-                    </md-card-header>
-                    <md-card-content>
-                      <p> {{ comment.content}}</p>
-                      <div *ngIf="comment.replies.length > 0" class="replies-card">
-                        <div *ngFor="let reply of comment.replies">
-                          <md-card-header>
-                            <img md-card-avatar [src]="reply.author.photoLink">
-                            <md-card-title>
-                              {{ reply.author.displayName }}
-                            </md-card-title>
-                            <md-card-subtitle>
-                              {{ reply.createdTime | date:"MM/dd/yy" }}
-                            </md-card-subtitle>
-                          </md-card-header>
-                          <md-card-content>
-                            <p>{{ reply.content }}</p>
-                          </md-card-content>
-                        </div>
+  <ng-template #elseBlock>
+    <md-card *ngFor="let cw of courseWork" class="coursework-card">
+      <md-card-header class="coursework-header">
+        <md-card-title>
+          <a [href]="cw.alternateLink" class="coursework-title" target="_blank">{{ cw.title }}</a>
+        </md-card-title>
+      </md-card-header>
+      <md-card-content>
+        <div *ngFor="let submission of cw.submissions">
+          <div *ngIf="submission.assignmentSubmission">
+            <div *ngIf="submission.assignmentSubmission.attachments">
+              <div *ngFor="let attachment of submission.assignmentSubmission.attachments">
+                <div *ngIf="attachment.driveFile" class="file">
+                  <a [href]="attachment.driveFile.alternateLink" class="file-title" target="_blank">
+                    <img [src]="attachment.driveFile.thumbnailUrl" alt="thumbnail" class="file-thumbnail">
+                    {{ attachment.driveFile.title }}
+                  </a>
+                  <div *ngIf="attachment.driveFile.comments">
+                    <md-card *ngFor="let comment of attachment.driveFile.comments" class="comments-card">
+                      <div *ngIf="comment.content">
+                        <md-card-header>
+                          <img md-card-avatar [src]="comment.author.photoLink">
+                          <md-card-title>
+                            {{ comment.author.displayName }}
+                          </md-card-title>
+                          <md-card-subtitle>
+                            {{ comment.createdTime | date:"MM/dd/yy" }}
+                          </md-card-subtitle>
+                        </md-card-header>
+                        <md-card-content>
+                          <p> {{ comment.content}}</p>
+                          <div *ngIf="comment.replies.length > 0" class="replies-card">
+                            <div *ngFor="let reply of comment.replies">
+                              <div *ngIf="reply.content">
+                                <md-card-header>
+                                  <img md-card-avatar [src]="reply.author.photoLink">
+                                  <md-card-title>
+                                    {{ reply.author.displayName }}
+                                  </md-card-title>
+                                  <md-card-subtitle>
+                                    {{ reply.createdTime | date:"MM/dd/yy" }}
+                                  </md-card-subtitle>
+                                </md-card-header>
+                                <md-card-content>
+                                  <p>{{ reply.content }}</p>
+                                </md-card-content>
+                              </div>
+                            </div>
+                          </div>
+                        </md-card-content>
                       </div>
-                    </md-card-content>
-                </md-card>
+                    </md-card>
+                  </div>
+                </div>
               </div>
-            </md-card-content>
-          </md-card>
-          <ng-template #noComments>
-            <md-card class="file-card-no-comments">
-              <p>{{ file.name }} has no comments</p>
-            </md-card>
-          </ng-template>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-    <ng-template #noFiles>
-      <p>This student has no files in Google Classroom</p>
-    </ng-template>
+      </md-card-content>
+    </md-card>
   </ng-template>
 </div>

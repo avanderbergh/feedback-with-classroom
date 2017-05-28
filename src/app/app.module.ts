@@ -18,7 +18,8 @@ import { MdCardModule,
   MdTooltipModule,
   MdButtonModule,
   MdProgressSpinnerModule,
-  MdChipsModule } from '@angular/material';
+  MdChipsModule,
+  MdSelectModule } from '@angular/material';
 
 import { GoogleApiService } from './google-api.service';
 import { AuthGuard } from './auth-guard.service';
@@ -52,7 +53,8 @@ import { environment } from '../environments/environment';
     MdTooltipModule,
     MdButtonModule,
     MdProgressSpinnerModule,
-    MdChipsModule
+    MdChipsModule,
+    MdSelectModule
   ],
   providers: [GoogleApiService, AuthGuard],
   bootstrap: [AppComponent]

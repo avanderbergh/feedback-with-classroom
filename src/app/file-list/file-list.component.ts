@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs/Subscription';
   styleUrls: ['./file-list.component.css']
 })
 export class FileListComponent implements OnInit, OnDestroy {
+  courseWork: any[] = [];
   files: any[] = [];
   loading = false;
   courseId: string;
@@ -26,6 +27,7 @@ export class FileListComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.selectedStudentSub = this.dataService.studentSelected$.subscribe(student => {
+      this.courseWork = this.dataService.courseWork;
       console.log('student: ', student);
       const coursePromise = new Promise<any> ((resolve, reject) => {
         this.courseParamSub = this.route.parent.params.subscribe(params => {
@@ -60,56 +62,40 @@ export class FileListComponent implements OnInit, OnDestroy {
         });
         this.studentParamSub.complete();
       });
-      this.files = [];
       Promise.all([studentPromise, coursePromise]).then(result => {
         this.loading = true;
-        const selectedStudent = result[0];
-        const teacherGroupEmail = this.dataService.selectedCourse.teacherGroupEmail;
-        const emailAddress = selectedStudent.profile.emailAddress;
-        const url = 'https://www.googleapis.com/drive/v3/files';
-        const obj = 'files';
-        const p = {
-          orderBy: 'createdTime,name',
-          q: `'${teacherGroupEmail}' in writers
-              and (
-                '${emailAddress}' in readers or
-                '${emailAddress}' in owners
-              )`,
-          fields: 'files(iconLink,id,name,thumbnailLink,webViewLink,createdTime),nextPageToken'
-        };
-        this.googleApi.list(url, obj, p).then(
-          files => {
-            console.log(files);
-            this.files = files;
-            for (const file of files) {
-              let url = `https://www.googleapis.com/drive/v3/files/${file.id}/comments`;
-              let obj = 'comments';
-              let p = { fields: '*' };
-              this.googleApi.list(url, obj, p).then(
-                comments => {
-                  file.comments = comments;
+        for (const courseWork of this.courseWork) {
+          let url = `https://classroom.googleapis.com/v1/courses/${this.courseId}/courseWork/${courseWork.id}/studentSubmissions`;
+          let obj = 'studentSubmissions';
+          let p = {
+            fields: '*',
+            userId: student.userId
+          };
+          this.googleApi.list(url, obj, p).then(
+            submissions => {
+              courseWork.submissions = submissions;
+              for (const submission of courseWork.submissions) {
+                if (submission.assignmentSubmission) {
+                  if (submission.assignmentSubmission.attachments) {
+                    for (const attachment of submission.assignmentSubmission.attachments) {
+                      if (attachment.driveFile) {
+                        let url = `https://www.googleapis.com/drive/v3/files/${attachment.driveFile.id}/comments`;
+                        let obj = 'comments';
+                        let p = { fields: '*' };
+                        this.googleApi.list(url, obj, p).then(
+                          comments => {
+                            attachment.driveFile.comments = comments;
+                          }
+                        );
+                      }
+                    }
+                  }
                 }
-              );
-            }
-            this.loading = false;
-          },
-          err => {
-            console.log(err);
-            this.loading = false;
-          }
-        );
-        if (this.dataService.courseWork) {
-          for (const work of this.dataService.courseWork) {
-            let url = `https://classroom.googleapis.com/v1/courses/${this.courseId}/courseWork/${work.id}/studentSubmissions`;
-            let obj = 'studentSubmissions';
-            let p = { fields: '*' };
-            this.googleApi.list(url, obj, p).then(
-              submissions => {
-                console.log(submissions[0]);
               }
-            );
-          }
+            }
+          );
         }
+        this.loading = false;
       });
     });
   }

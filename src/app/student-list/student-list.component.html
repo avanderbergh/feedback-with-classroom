@@ -5,13 +5,11 @@
     </div>
     <ng-template #loaded>
       <md-card *ngIf="students.length > 0; else elseBlock">
-        <md-list class="student-list" *ngIf="students">
-          <md-list-item *ngFor="let student of students">
-            <button md-button (click)="onSelect(student)"> 
-                {{ student.profile.name.fullName }}
-            </button>
-          </md-list-item>
-        </md-list>
+        <md-select placeholder="Select Student" [(ngModel)]="selectedStudent" name="student" (ngModelChange)="onSelect(selectedStudent)">
+          <md-option *ngFor="let student of students" [value]="student">
+            {{ student.profile.name.fullName }}
+          </md-option>
+        </md-select>
       </md-card>
       <ng-template #elseBlock>
         <p>There are no students in this class</p>
