@@ -31,6 +31,7 @@ export class FileListComponent implements OnInit, OnDestroy {
       this.courseWork = student.courseWork;
       console.log('student: ', student);
       const coursePromise = new Promise<any> ((resolve, reject) => {
+        console.log('file-list-coursePromise called');
         this.courseParamSub = this.route.parent.params.subscribe(params => {
           this.courseId = params['id'];
           if (!this.dataService.selectedCourse) {
@@ -48,6 +49,7 @@ export class FileListComponent implements OnInit, OnDestroy {
         this.courseParamSub.complete();
       });
       const studentPromise = new Promise<any> ((resolve, reject) => {
+        console.log('file-list-studentPromise called');
         this.studentParamSub = this.route.params.subscribe(params => {
           this.studnetId = params['id'];
           if (!student.hasOwnProperty('userId')) {
@@ -65,36 +67,38 @@ export class FileListComponent implements OnInit, OnDestroy {
       });
       Promise.all([studentPromise, coursePromise]).then(result => {
         this.loading = true;
-        for (const courseWork of student.courseWork) {
-          let url = `https://classroom.googleapis.com/v1/courses/${this.courseId}/courseWork/${courseWork.id}/studentSubmissions`;
-          let obj = 'studentSubmissions';
-          let p = {
-            fields: '*',
-            userId: student.userId
-          };
-          this.googleApi.list(url, obj, p).then(
-            submissions => {
-              courseWork.submissions = submissions;
-              for (const submission of courseWork.submissions) {
-                if (submission.assignmentSubmission) {
-                  if (submission.assignmentSubmission.attachments) {
-                    for (const attachment of submission.assignmentSubmission.attachments) {
-                      if (attachment.driveFile) {
-                        let url = `https://www.googleapis.com/drive/v3/files/${attachment.driveFile.id}/comments`;
-                        let obj = 'comments';
-                        let p = { fields: '*' };
-                        this.googleApi.list(url, obj, p).then(
-                          comments => {
-                            attachment.driveFile.comments = comments;
-                          }
-                        );
+        if (student.courseWork) {
+          for (const courseWork of student.courseWork) {
+            let url = `https://classroom.googleapis.com/v1/courses/${student.courseId}/courseWork/${courseWork.id}/studentSubmissions`;
+            let obj = 'studentSubmissions';
+            let p = {
+              fields: '*',
+              userId: student.userId
+            };
+            this.googleApi.list(url, obj, p).then(
+              submissions => {
+                courseWork.submissions = submissions;
+                for (const submission of courseWork.submissions) {
+                  if (submission.assignmentSubmission) {
+                    if (submission.assignmentSubmission.attachments) {
+                      for (const attachment of submission.assignmentSubmission.attachments) {
+                        if (attachment.driveFile) {
+                          let url = `https://www.googleapis.com/drive/v3/files/${attachment.driveFile.id}/comments`;
+                          let obj = 'comments';
+                          let p = { fields: '*' };
+                          this.googleApi.list(url, obj, p).then(
+                            comments => {
+                              attachment.driveFile.comments = comments;
+                            }
+                          );
+                        }
                       }
                     }
                   }
                 }
               }
-            }
-          );
+            );
+          }
         }
         this.loading = false;
       });
