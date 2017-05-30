@@ -14,10 +14,11 @@ export class FileListComponent implements OnInit, OnDestroy {
   files: any[] = [];
   loading = false;
   courseId: string;
-  studnetId: number;
+  studentId: number;
   private selectedStudentSub: any;
   private courseParamSub: any;
   private studentParamSub: any;
+  private courseWorkParamSub: any;
   constructor(
     private router: Router,
     private route: ActivatedRoute,
@@ -30,19 +31,49 @@ export class FileListComponent implements OnInit, OnDestroy {
     this.selectedStudentSub = this.dataService.studentSelected$.subscribe(student => {
       this.courseWork = student.courseWork;
       console.log('student: ', student);
+      const courseWorkPromise = new Promise<any> ((resolve, reject) => {
+        console.log('file-list-courseWorkPromise called');
+        this.courseWorkParamSub = this.route.parent.params.subscribe(params => {
+          this.courseId = params['id'];
+          if (!this.courseWork) {
+            let url = `https://classroom.googleapis.com/v1/courses/${params['id']}/courseWork`;
+            let obj = 'courseWork';
+            let p = {
+              courseWorkStates: 'PUBLISHED',
+              fields: 'courseWork(description,id,title,workType,alternateLink),nextPageToken'
+            };
+            this.googleApi.list(url, obj, p).then(
+              result => {
+                console.log('Setting Course Work');
+                this.courseWork = result;
+                resolve(result);
+              },
+              err => {
+                console.log(err);
+                reject(err);
+              }
+            );
+          } else {
+            resolve(this.courseWork);
+          }
+        });
+        this.courseWorkParamSub.complete();
+      });
       const coursePromise = new Promise<any> ((resolve, reject) => {
         console.log('file-list-coursePromise called');
         this.courseParamSub = this.route.parent.params.subscribe(params => {
           this.courseId = params['id'];
           if (!this.dataService.selectedCourse) {
-            const url = `https://classroom.googleapis.com/v1/courses/${this.courseId}`;
+            let url = `https://classroom.googleapis.com/v1/courses/${this.courseId}`;
             this.googleApi.get(url).then(
               result => {
                 console.log('getting course info...');
                 this.dataService.selectedCourse = result;
+                this.courseId = result.id;
                 resolve(result); }
             );
           } else {
+            this.courseId = this.dataService.selectedCourse.id;
             resolve(this.dataService.selectedCourse);
           }
         });
@@ -51,9 +82,9 @@ export class FileListComponent implements OnInit, OnDestroy {
       const studentPromise = new Promise<any> ((resolve, reject) => {
         console.log('file-list-studentPromise called');
         this.studentParamSub = this.route.params.subscribe(params => {
-          this.studnetId = params['id'];
+          this.studentId = params['id'];
           if (!student.hasOwnProperty('userId')) {
-            const url = `https://classroom.googleapis.com/v1/courses/${this.courseId}/students/${this.studnetId}`;
+            const url = `https://classroom.googleapis.com/v1/courses/${this.courseId}/students/${this.studentId}`;
             this.googleApi.get(url).then(
               result => {
                 resolve(result);
@@ -65,15 +96,16 @@ export class FileListComponent implements OnInit, OnDestroy {
         });
         this.studentParamSub.complete();
       });
-      Promise.all([studentPromise, coursePromise]).then(result => {
+      Promise.all([studentPromise, coursePromise, courseWorkPromise]).then(result => {
         this.loading = true;
-        if (student.courseWork) {
-          for (const courseWork of student.courseWork) {
-            let url = `https://classroom.googleapis.com/v1/courses/${student.courseId}/courseWork/${courseWork.id}/studentSubmissions`;
+        this.studentId = result[0].userId;
+        if (this.courseWork) {
+          for (const courseWork of this.courseWork) {
+            let url = `https://classroom.googleapis.com/v1/courses/${this.courseId}/courseWork/${courseWork.id}/studentSubmissions`;
             let obj = 'studentSubmissions';
             let p = {
               fields: '*',
-              userId: student.userId
+              userId: this.studentId
             };
             this.googleApi.list(url, obj, p).then(
               submissions => {
