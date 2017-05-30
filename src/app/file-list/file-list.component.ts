@@ -26,8 +26,9 @@ export class FileListComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
+    console.log('Loading File List Component');
     this.selectedStudentSub = this.dataService.studentSelected$.subscribe(student => {
-      this.courseWork = this.dataService.courseWork;
+      this.courseWork = student.courseWork;
       console.log('student: ', student);
       const coursePromise = new Promise<any> ((resolve, reject) => {
         this.courseParamSub = this.route.parent.params.subscribe(params => {
@@ -64,7 +65,7 @@ export class FileListComponent implements OnInit, OnDestroy {
       });
       Promise.all([studentPromise, coursePromise]).then(result => {
         this.loading = true;
-        for (const courseWork of this.courseWork) {
+        for (const courseWork of student.courseWork) {
           let url = `https://classroom.googleapis.com/v1/courses/${this.courseId}/courseWork/${courseWork.id}/studentSubmissions`;
           let obj = 'studentSubmissions';
           let p = {

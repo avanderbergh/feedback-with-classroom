@@ -23,6 +23,7 @@ export class StudentListComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    console.log('Loading Student List Component');
     this.sub = this.route.params.subscribe(params => {
       const coursePromise = new Promise<any> ((resolve, reject) => {
         if (!this.dataService.selectedCourse) {
@@ -49,7 +50,8 @@ export class StudentListComponent implements OnInit {
         };
         this.googleApi.list(url, obj, p).then(
           result => {
-            this.dataService.courseWork = result;
+            console.log('Setting Course Work');
+            this.courseWork = result;
           },
           err => {
             console.log(err);
@@ -72,6 +74,7 @@ export class StudentListComponent implements OnInit {
     });
   }
   onSelect(student: any) {
+    student.courseWork = this.courseWork;
     this.dataService.selectStudent(student);
     this.router.navigate(['s', student.userId, 'files'], {relativeTo: this.route});
   }
