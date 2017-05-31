@@ -15,6 +15,7 @@ export class FileListComponent implements OnInit, OnDestroy {
   loading = false;
   courseId: string;
   studentId: number;
+  myComments: string;
   private selectedStudentSub: any;
   private courseParamSub: any;
   private studentParamSub: any;
@@ -29,6 +30,7 @@ export class FileListComponent implements OnInit, OnDestroy {
   ngOnInit() {
     console.log('Loading File List Component');
     this.selectedStudentSub = this.dataService.studentSelected$.subscribe(student => {
+      this.myComments = '';
       this.courseWork = student.courseWork;
       console.log('student: ', student);
       const courseWorkPromise = new Promise<any> ((resolve, reject) => {
@@ -121,6 +123,17 @@ export class FileListComponent implements OnInit, OnDestroy {
                           this.googleApi.list(url, obj, p).then(
                             comments => {
                               attachment.driveFile.comments = comments;
+                              for (const comment of comments) {
+                                if (comment.author.me) {
+                                  this.myComments = this.myComments.concat(comment.content, ' ');
+                                }
+                                for (const reply of comment.replies) {
+                                  if (reply.author.me) {
+                                    this.myComments = this.myComments.concat(reply.content);
+                                  }
+                                }
+                              }
+                              console.log(this.myComments);
                             }
                           );
                         }
