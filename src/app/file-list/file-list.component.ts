@@ -3,13 +3,34 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 import { GoogleApiService } from '../google-api.service';
 import { DataService } from '../data.service';
 import { Subscription } from 'rxjs/Subscription';
+import { Http, Response } from '@angular/http';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/catch';
+import 'rxjs/add/operator/map';
 
 @Component({
   selector: 'app-file-list',
   templateUrl: './file-list.component.html',
   styleUrls: ['./file-list.component.css']
 })
+
+
 export class FileListComponent implements OnInit, OnDestroy {
+
+  private handleError (error: Response | any) {
+    // In a real world app, you might use a remote logging infrastructure
+    let errMsg: string;
+    if (error instanceof Response) {
+      const body = error.json() || '';
+      const err = body.error || JSON.stringify(body);
+      errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
+    } else {
+      errMsg = error.message ? error.message : error.toString();
+    }
+    console.error(errMsg);
+    return Observable.throw(errMsg);
+  }
+
   courseWork: any[] = [];
   files: any[] = [];
   loading = false;
@@ -24,17 +45,15 @@ export class FileListComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private googleApi: GoogleApiService,
-    private dataService: DataService
+    private dataService: DataService,
+    private http: Http
   ) { }
 
   ngOnInit() {
-    console.log('Loading File List Component');
-    this.selectedStudentSub = this.dataService.studentSelected$.subscribe(student => {
+    this.selectedStudentSub = this.dataService.studentSelected$.subscribe(async student => {
       this.myComments = '';
       this.courseWork = student.courseWork;
-      console.log('student: ', student);
       const courseWorkPromise = new Promise<any> ((resolve, reject) => {
-        console.log('file-list-courseWorkPromise called');
         this.courseWorkParamSub = this.route.parent.params.subscribe(params => {
           this.courseId = params['id'];
           if (!this.courseWork) {
@@ -62,14 +81,12 @@ export class FileListComponent implements OnInit, OnDestroy {
         this.courseWorkParamSub.complete();
       });
       const coursePromise = new Promise<any> ((resolve, reject) => {
-        console.log('file-list-coursePromise called');
         this.courseParamSub = this.route.parent.params.subscribe(params => {
           this.courseId = params['id'];
           if (!this.dataService.selectedCourse) {
             let url = `https://classroom.googleapis.com/v1/courses/${this.courseId}`;
             this.googleApi.get(url).then(
               result => {
-                console.log('getting course info...');
                 this.dataService.selectedCourse = result;
                 this.courseId = result.id;
                 resolve(result); }
@@ -82,7 +99,6 @@ export class FileListComponent implements OnInit, OnDestroy {
         this.courseParamSub.complete();
       });
       const studentPromise = new Promise<any> ((resolve, reject) => {
-        console.log('file-list-studentPromise called');
         this.studentParamSub = this.route.params.subscribe(params => {
           this.studentId = params['id'];
           if (!student.hasOwnProperty('userId')) {
@@ -98,7 +114,7 @@ export class FileListComponent implements OnInit, OnDestroy {
         });
         this.studentParamSub.complete();
       });
-      Promise.all([studentPromise, coursePromise, courseWorkPromise]).then(result => {
+      await Promise.all([studentPromise, coursePromise, courseWorkPromise]).then(async result => {
         this.loading = true;
         this.studentId = result[0].userId;
         if (this.courseWork) {
@@ -109,8 +125,8 @@ export class FileListComponent implements OnInit, OnDestroy {
               fields: '*',
               userId: this.studentId
             };
-            this.googleApi.list(url, obj, p).then(
-              submissions => {
+            await this.googleApi.list(url, obj, p).then(
+              async submissions => {
                 courseWork.submissions = submissions;
                 for (const submission of courseWork.submissions) {
                   if (submission.assignmentSubmission) {
@@ -120,7 +136,7 @@ export class FileListComponent implements OnInit, OnDestroy {
                           let url = `https://www.googleapis.com/drive/v3/files/${attachment.driveFile.id}/comments`;
                           let obj = 'comments';
                           let p = { fields: '*' };
-                          this.googleApi.list(url, obj, p).then(
+                          await this.googleApi.list(url, obj, p).then(
                             comments => {
                               attachment.driveFile.comments = comments;
                               for (const comment of comments) {
@@ -133,7 +149,6 @@ export class FileListComponent implements OnInit, OnDestroy {
                                   }
                                 }
                               }
-                              console.log(this.myComments);
                             }
                           );
                         }
@@ -146,6 +161,17 @@ export class FileListComponent implements OnInit, OnDestroy {
           }
         }
         this.loading = false;
+        console.log('1: ', this.myComments);
+        let url = 'https://us-central1-brilliant-badger.cloudfunctions.net/helloWorld';
+        let body = { 'text': this.myComments };
+        let myResult = this.http.post(url, JSON.stringify(body))
+                              .map(res => {
+                                let body = res.json();
+                                return body;
+                              }).catch(this.handleError);
+        myResult.subscribe(syntax => {
+          console.log(syntax);
+        });
       });
     });
   }
