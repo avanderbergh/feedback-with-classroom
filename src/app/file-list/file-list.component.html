@@ -1,70 +1,84 @@
-<pre>
-  {{ myComments }}
-</pre>
+<div>
+  
+</div>
 <div class="coursework-list">
   <div class="loading-spinner" *ngIf="loading; else elseBlock">
     <md-spinner mode="indeterminate"></md-spinner>
   </div>
   <ng-template #elseBlock>
-    <md-card *ngFor="let cw of courseWork" class="coursework-card">
-      <md-card-header class="coursework-header">
-        <md-card-title>
-          <a [href]="cw.alternateLink" class="coursework-title" target="_blank">{{ cw.title }}</a>
-        </md-card-title>
+    <md-card class="coursework-card">
+      <md-card-header>
+        <md-card-title><span class="coursework-title">Noun-verb pairs in your comments</span></md-card-title>
       </md-card-header>
       <md-card-content>
-        <div *ngFor="let submission of cw.submissions">
-          <div *ngIf="submission.assignmentSubmission">
-            <div *ngIf="submission.assignmentSubmission.attachments">
-              <div *ngFor="let attachment of submission.assignmentSubmission.attachments">
-                <div *ngIf="attachment.driveFile" class="file">
-                  <a [href]="attachment.driveFile.alternateLink" class="file-title" target="_blank">
-                    <img [src]="attachment.driveFile.thumbnailUrl" alt="thumbnail" class="file-thumbnail">
-                    {{ attachment.driveFile.title }}
-                  </a>
-                  <div *ngIf="attachment.driveFile.comments">
-                    <md-card *ngFor="let comment of attachment.driveFile.comments" class="comments-card">
-                      <div *ngIf="comment.content">
-                        <md-card-header>
-                          <img md-card-avatar [src]="comment.author.photoLink">
-                          <md-card-title>
-                            {{ comment.author.displayName }}
-                          </md-card-title>
-                          <md-card-subtitle>
-                            {{ comment.createdTime | date:"MM/dd/yy" }}
-                          </md-card-subtitle>
-                        </md-card-header>
-                        <md-card-content>
-                          <p> {{ comment.content}}</p>
-                          <div *ngIf="comment.replies.length > 0" class="replies-card">
-                            <div *ngFor="let reply of comment.replies">
-                              <div *ngIf="reply.content">
-                                <md-card-header>
-                                  <img md-card-avatar [src]="reply.author.photoLink">
-                                  <md-card-title>
-                                    {{ reply.author.displayName }}
-                                  </md-card-title>
-                                  <md-card-subtitle>
-                                    {{ reply.createdTime | date:"MM/dd/yy" }}
-                                  </md-card-subtitle>
-                                </md-card-header>
-                                <md-card-content>
-                                  <p>{{ reply.content }}</p>
-                                </md-card-content>
+        <md-chip-list >
+          <md-chip *ngFor="let nounVerbPair of nounVerbPairs">
+            {{ nounVerbPair }}
+          </md-chip>
+        </md-chip-list>
+      </md-card-content>
+    </md-card>
+    <div *ngFor="let cw of courseWork">
+      <md-card  class="coursework-card" *ngIf="cw.show">
+        <md-card-header class="coursework-header">
+          <md-card-title>
+            <a [href]="cw.alternateLink" class="coursework-title" target="_blank">{{ cw.title }}</a>
+          </md-card-title>
+        </md-card-header>
+        <md-card-content>
+          <div *ngFor="let submission of cw.submissions">
+            <div *ngIf="submission.assignmentSubmission">
+              <div *ngIf="submission.assignmentSubmission.attachments">
+                <div *ngFor="let attachment of submission.assignmentSubmission.attachments">
+                  <div *ngIf="attachment.driveFile" class="file">
+                    <a [href]="attachment.driveFile.alternateLink" class="file-title" target="_blank">
+                      <img [src]="attachment.driveFile.thumbnailUrl" alt="thumbnail" class="file-thumbnail">
+                      {{ attachment.driveFile.title }}
+                    </a>
+                    <div *ngIf="attachment.driveFile.comments">
+                      <md-card *ngFor="let comment of attachment.driveFile.comments" class="comments-card">
+                        <div *ngIf="comment.content">
+                          <md-card-header>
+                            <img md-card-avatar [src]="comment.author.photoLink">
+                            <md-card-title>
+                              {{ comment.author.displayName }}
+                            </md-card-title>
+                            <md-card-subtitle>
+                              {{ comment.createdTime | date:"MM/dd/yy" }}
+                            </md-card-subtitle>
+                          </md-card-header>
+                          <md-card-content>
+                            <p> {{ comment.content}}</p>
+                            <div *ngIf="comment.replies.length > 0" class="replies-card">
+                              <div *ngFor="let reply of comment.replies">
+                                <div *ngIf="reply.content">
+                                  <md-card-header>
+                                    <img md-card-avatar [src]="reply.author.photoLink">
+                                    <md-card-title>
+                                      {{ reply.author.displayName }}
+                                    </md-card-title>
+                                    <md-card-subtitle>
+                                      {{ reply.createdTime | date:"MM/dd/yy" }}
+                                    </md-card-subtitle>
+                                  </md-card-header>
+                                  <md-card-content>
+                                    <p>{{ reply.content }}</p>
+                                  </md-card-content>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </md-card-content>
-                      </div>
-                    </md-card>
+                          </md-card-content>
+                        </div>
+                      </md-card>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </md-card-content>
-    </md-card>
+        </md-card-content>
+      </md-card>
+    </div>
   </ng-template>
 </div>
 

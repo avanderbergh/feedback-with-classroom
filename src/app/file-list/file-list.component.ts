@@ -37,6 +37,7 @@ export class FileListComponent implements OnInit, OnDestroy {
   courseId: string;
   studentId: number;
   myComments: string;
+  nounVerbPairs: string[];
   private selectedStudentSub: any;
   private courseParamSub: any;
   private studentParamSub: any;
@@ -138,6 +139,11 @@ export class FileListComponent implements OnInit, OnDestroy {
                           let p = { fields: '*' };
                           await this.googleApi.list(url, obj, p).then(
                             comments => {
+                              if (comments.length > 0 ) {
+                                courseWork.show = true;
+                              } else {
+                                courseWork.show = false;
+                              }
                               attachment.driveFile.comments = comments;
                               for (const comment of comments) {
                                 if (comment.author.me) {
@@ -171,6 +177,7 @@ export class FileListComponent implements OnInit, OnDestroy {
                               }).catch(this.handleError);
         myResult.subscribe(syntax => {
           console.log(syntax);
+          this.nounVerbPairs = syntax;
         });
       });
     });
