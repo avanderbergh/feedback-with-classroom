@@ -48,6 +48,7 @@ export class GoogleApiService {
     window.setTimeout(() => this.router.navigate(['h']), 1000);
   }
   public isSignedIn(): Promise<boolean> {
+    console.log('isSignedIn Called');
     return new Promise(resolve => {
       gapi.load('auth2', () => {
         gapi.auth2.init({
@@ -56,11 +57,13 @@ export class GoogleApiService {
         }).then(() => {
           // Check if the user is signed in with the gapi.
           if (gapi.auth2.getAuthInstance().isSignedIn.get()) {
-            // If the user is signed in with gapi, also sign them in with firebase auth.
-            if (!this.afAuth.authState) {
-              this.afAuth.auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-            }
-            resolve(true);
+            this.user.subscribe(user => {
+              // If the user is signed in with gapi, also sign them in with firebase auth.
+              if (!user) {
+                this.afAuth.auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider());
+              }
+              resolve(true);
+            });
           } else {
             this.router.navigate(['/login']);
             resolve(false);
