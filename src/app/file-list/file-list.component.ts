@@ -168,7 +168,7 @@ export class FileListComponent implements OnInit, OnDestroy {
         }
         this.loading = false;
         console.log('1: ', this.myComments);
-        let url = 'https://us-central1-brilliant-badger.cloudfunctions.net/helloWorld';
+        let url = 'https://us-central1-brilliant-badger.cloudfunctions.net/analyzeSyntax';
         let body = { 'text': this.myComments };
         let myResult = this.http.post(url, JSON.stringify(body))
                               .map(res => {

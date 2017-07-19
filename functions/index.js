@@ -1,7 +1,7 @@
 var functions = require('firebase-functions');
 const Language = require('@google-cloud/language');
 
-exports.helloWorld = functions.https.onRequest((request, response) => {
+exports.analyzeSyntax = functions.https.onRequest((request, response) => {
 
     const body = JSON.parse(request.body);
     
@@ -27,7 +27,8 @@ exports.helloWorld = functions.https.onRequest((request, response) => {
                 if (token.partOfSpeech.tag == 'NOUN') {
                     let verb = tokens[token.dependencyEdge.headTokenIndex];
                     if (verb.partOfSpeech.tag == 'VERB') {
-                        myResponse.push(verb.lemma.concat(' ', token.lemma));
+                        let nvPair = verb.lemma.concat(' ', token.lemma).toLowerCase();
+                        myResponse.push(nvPair);
                     }
                 };
             }
