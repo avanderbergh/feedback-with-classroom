@@ -4,8 +4,8 @@
         <md-spinner mode="indeterminate"></md-spinner>
     </div>
     <ng-template #loaded>
-      <md-card *ngIf="students.length > 0; else elseBlock">
-        <md-list class="student-list" *ngIf="students">
+      <md-card *ngIf="students.length > 0; else elseBlock" class="student-list">
+        <md-list *ngIf="students">
           <md-list-item *ngFor="let student of students">
             <button md-button (click)="onSelect(student)"> 
               {{ student.profile.name.fullName }}

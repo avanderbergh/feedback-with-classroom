@@ -1,5 +1,6 @@
 .coursework-list {
     flex-basis: 80rem;
+    flex: 2;
 }
 
 .coursework-card {
