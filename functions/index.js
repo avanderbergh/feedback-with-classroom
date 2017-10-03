@@ -18,25 +18,34 @@ exports.analyzeSyntax = functions.https.onRequest((request, response) => {
 
     // Detects the syntax of the text
     const document = language.document({ content: text});
+    
+    // Get the origin of the call.
+    const origin = request.header('origin');
+    console.log('Origin: ' + origin);
+    response.setHeader('Access-Control-Allow-Origin', origin)
 
-    document.detectSyntax()
-        .then(results => {
-            let myResponse = [];
-            let tokens = results[0];
-            for (let token of tokens) {
-                if (token.partOfSpeech.tag == 'NOUN') {
-                    let verb = tokens[token.dependencyEdge.headTokenIndex];
-                    if (verb.partOfSpeech.tag == 'VERB') {
-                        let nvPair = verb.lemma.concat(' ', token.lemma).toLowerCase();
-                        myResponse.push(nvPair);
-                    }
-                };
+    if (origin != 'https://feedback.withclassroom.com') {
+        console.log('Invalid Origin');
+        response.send([]);
+    } else {
+        document.detectSyntax()
+            .then(results => {
+                let myResponse = [];
+                let tokens = results[0];
+                for (let token of tokens) {
+                    if (token.partOfSpeech.tag == 'NOUN') {
+                        let verb = tokens[token.dependencyEdge.headTokenIndex];
+                        if (verb.partOfSpeech.tag == 'VERB') {
+                            let nvPair = verb.lemma.concat(' ', token.lemma).toLowerCase();
+                            myResponse.push(nvPair);
+                        }
+                    };
+                }
+                response.send(myResponse);
             }
-            response.setHeader('Access-Control-Allow-Origin', 'http://localhost:4200');
-            response.send(myResponse);
-        }
-    ).catch(err => {
-        console.error('ERROR:', err);
-        response.send(err);
-    });
+        ).catch(err => {
+            console.error('ERROR:', err);
+            response.send(err);
+        });
+    }
 });
