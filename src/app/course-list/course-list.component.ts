@@ -1,6 +1,6 @@
 import { Router } from '@angular/router';
 import { DataService } from '../data.service';
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, AfterContentInit } from '@angular/core';
 import { GoogleApiService } from '../google-api.service';
 
 @Component({
@@ -8,7 +8,7 @@ import { GoogleApiService } from '../google-api.service';
   templateUrl: './course-list.component.html',
   styleUrls: ['./course-list.component.css']
 })
-export class CourseListComponent implements AfterViewInit {
+export class CourseListComponent implements AfterContentInit {
 
   courses;
   loading = false;
@@ -18,7 +18,7 @@ export class CourseListComponent implements AfterViewInit {
     private googleApi: GoogleApiService
     ) { }
 
-  ngAfterViewInit() {
+  ngAfterContentInit() {
     const url = 'https://classroom.googleapis.com/v1/courses';
     const obj = 'courses';
     const params = {teacherId: 'me'};
